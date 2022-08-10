@@ -6,6 +6,8 @@ const websiteNameEl = document.getElementById("website-name");
 const websiteUrlEl = document.getElementById("website-url");
 const bookmarksContainer = document.getElementById("bookmarks-container");
 
+let bookmarks = [];
+
 // SHOW MODAL, FOCUS ON INPUT
 function showModal() {
   modal.classList.add("show-modal");
@@ -38,6 +40,23 @@ function validate(nameValue, urlValue) {
   return true;
 }
 
+// FETCH BOOKMARKS
+function fetchBookmarks() {
+  // GET BOOKMARKS FROM LOCALSTORAGE IF AVAILABLE
+  if (localStorage.getItem("bookmarks")) {
+    bookmarks = JSON.parse(localStorage.getItem("bookmarks"));
+  } else {
+    // CREATE BOOKMARKS ARRAY IN LOCALSTORAGE
+    bookmarks = [
+      {
+        name: "Jacinto Design",
+        url: "https://jacinto.design",
+      },
+    ];
+    localStorage.setItem("bookmarks", JSON.stringify(bookmarks));
+  }
+}
+
 // HANDLE DATA FROM FORM
 function storeBookmark(e) {
   e.preventDefault();
@@ -49,7 +68,19 @@ function storeBookmark(e) {
   if (!validate(nameValue, urlValue)) {
     return false;
   }
+  const bookmark = {
+    name: nameValue,
+    url: urlValue,
+  };
+  bookmarks.push(bookmark);
+  localStorage.setItem("bookmarks", JSON.stringify(bookmarks));
+  fetchBookmarks();
+  bookmarkForm.reset();
+  websiteNameEl.focus();
 }
 
 // EVENT LISTENER
 bookmarkForm.addEventListener("submit", storeBookmark);
+
+// ON LOAD, FETCH BOOKMARKS
+fetchBookmarks();
